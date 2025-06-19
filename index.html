@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>タスク＆予定管理アプリ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- メイン画面 -->
+  <div id="screen-main" class="screen active">
+    <div class="header">
+      <span id="status"></span>
+      <button class="btn btn-calendar" onclick="showScreen('screen-calendar')">カレンダー表示</button>
+    </div>
+    <div class="task-section">
+      <div class="section-header">
+        <h1>現在進行中のタスク</h1>
+      </div>
+      <div id="task-list-current"></div>
+    </div>
+    <div class="task-section">
+      <div class="section-header">
+        <h3>時間切れ・完了済みタスク</h3>
+        <button class="btn btn-danger btn-small" onclick="deleteAllFinishedTasks()">一括削除</button>
+      </div>
+      <div id="task-list-finished"></div>
+    </div>
+    <div class="schedule-section">
+      <div class="section-header">
+        <h1>予定リスト</h1>
+      </div>
+      <div id="schedule-list"></div>
+    </div>
+    <button class="add-button" onclick="showAddTypeDialog()">＋</button>
+  </div>
+
+  <!-- 追加種別ダイアログ -->
+  <div id="add-type-dialog" class="popup">
+    <div class="popup-content">
+      <h3>追加する種類を選択</h3>
+      <button class="btn btn-primary" onclick="showScreen('screen-add-task');closeAddTypeDialog();">タスクとして追加</button>
+      <button class="btn btn-primary" onclick="showScreen('screen-add-schedule');closeAddTypeDialog();">予定として追加</button>
+      <button class="btn btn-secondary" onclick="closeAddTypeDialog()">キャンセル</button>
+    </div>
+  </div>
+
+  <!-- タスク追加画面 -->
+  <div id="screen-add-task" class="screen">
+    <div class="button-group-top">
+      <button class="btn btn-secondary" onclick="showScreen('screen-main')">戻る</button>
+      <button class="btn btn-primary" id="add-task-save-btn">追加</button>
+    </div>
+    <div class="form-group">
+      <label>名前</label>
+      <input type="text" id="task-name">
+    </div>
+    <div class="form-group">
+      <label>開始日時</label>
+      <input type="date" id="task-start-date">
+      <input type="time" id="task-start-time" step="60">
+    </div>
+    <div class="form-group">
+      <label>終了日時</label>
+      <input type="date" id="task-end-date">
+      <input type="time" id="task-end-time" step="60">
+    </div>
+    <div class="form-group">
+      <label>コメント</label>
+      <textarea id="task-comment"></textarea>
+    </div>
+    <div class="button-group-top">
+      <button class="btn btn-small btn-secondary" onclick="showScreen('screen-ai')">AIに相談</button>
+      <button class="btn btn-small btn-secondary" onclick="showScreen('screen-repeat-task')">規則的に記録</button>
+    </div>
+  </div>
+
+  <!-- 予定追加画面 -->
+  <div id="screen-add-schedule" class="screen">
+    <div class="button-group-top">
+      <button class="btn btn-secondary" onclick="showScreen('screen-main')">戻る</button>
+      <button class="btn btn-primary" id="add-schedule-save-btn">追加</button>
+    </div>
+    <div class="form-group">
+      <label>予定名</label>
+      <input type="text" id="schedule-name">
+    </div>
+    <div class="form-group">
+      <label>開始日時</label>
+      <input type="date" id="schedule-start-date">
+      <input type="time" id="schedule-start-time" step="60">
+    </div>
+    <div class="form-group">
+      <label>終了日時</label>
+      <input type="date" id="schedule-end-date">
+      <input type="time" id="schedule-end-time" step="60">
+    </div>
+    <div class="form-group">
+      <label>メモ</label>
+      <textarea id="schedule-comment"></textarea>
+    </div>
+    <div class="button-group-top">
+      <button class="btn btn-small btn-secondary" onclick="showScreen('screen-ai')">AIに相談</button>
+      <button class="btn btn-small btn-secondary" onclick="showScreen('screen-repeat-schedule')">規則的に記録</button>
+    </div>
+  </div>
+
+  <!-- 編集画面（タスク） -->
+  <div id="screen-edit-task" class="screen">
+    <div class="edit-btn-row">
+      <button class="btn btn-secondary" onclick="showScreen('screen-main')">戻る</button>
+      <button class="btn btn-danger" id="edit-task-delete-btn">予定を削除</button>
+      <button class="btn btn-primary" id="edit-task-save-btn">保存</button>
+      <button class="btn btn-primary" id="finish-task-btn">タスク終了！！</button>
+    </div>
+    <div class="form-group">
+      <label>タスクを編集</label>
+      <input type="text" id="edit-task-name">
+    </div>
+    <div class="form-group">
+      <label>開始日時</label>
+      <input type="date" id="edit-task-start-date">
+      <input type="time" id="edit-task-start-time" step="60">
+    </div>
+    <div class="form-group">
+      <label>終了日時</label>
+      <input type="date" id="edit-task-end-date">
+      <input type="time" id="edit-task-end-time" step="60">
+    </div>
+    <div class="form-group">
+      <label>コメント</label>
+      <textarea id="edit-task-comment"></textarea>
+    </div>
+  </div>
+
+  <!-- 編集画面（予定） -->
+  <div id="screen-edit-schedule" class="screen">
+    <div class="edit-btn-row">
+      <button class="btn btn-secondary" onclick="showScreen('screen-main')">戻る</button>
+      <button class="btn btn-danger" id="edit-schedule-delete-btn">予定を削除</button>
+      <button class="btn btn-primary" id="edit-schedule-save-btn">保存</button>
+    </div>
+    <div class="form-group">
+      <label>予定を編集</label>
+      <input type="text" id="edit-schedule-name">
+    </div>
+    <div class="form-group">
+      <label>開始日時</label>
+      <input type="date" id="edit-schedule-start-date">
+      <input type="time" id="edit-schedule-start-time" step="60">
+    </div>
+    <div class="form-group">
+      <label>終了日時</label>
+      <input type="date" id="edit-schedule-end-date">
+      <input type="time" id="edit-schedule-end-time" step="60">
+    </div>
+    <div class="form-group">
+      <label>メモ</label>
+      <textarea id="edit-schedule-comment"></textarea>
+    </div>
+  </div>
+
+  <!-- 規則的に記録画面（タスク用） -->
+  <div id="screen-repeat-task" class="screen">
+    <div class="button-group-top">
+      <button class="btn btn-secondary" onclick="showScreen('screen-add-task')">戻る</button>
+    </div>
+    <div class="form-group">
+      <label>繰り返し設定</label>
+      <div id="repeat-options-task">
+        <label><input type="checkbox" class="repeat-day-task" value="1"> 月曜日</label>
+        <label><input type="checkbox" class="repeat-day-task" value="2"> 火曜日</label>
+        <label><input type="checkbox" class="repeat-day-task" value="3"> 水曜日</label>
+        <label><input type="checkbox" class="repeat-day-task" value="4"> 木曜日</label>
+        <label><input type="checkbox" class="repeat-day-task" value="5"> 金曜日</label>
+        <label><input type="checkbox" class="repeat-day-task" value="6"> 土曜日</label>
+        <label><input type="checkbox" class="repeat-day-task" value="0"> 日曜日</label>
+        <label><input type="checkbox" id="repeat-everyday-task"> 毎日</label>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="saveRepeatSetting('task')">保存</button>
+  </div>
+
+  <!-- 規則的に記録画面（予定用） -->
+  <div id="screen-repeat-schedule" class="screen">
+    <div class="button-group-top">
+      <button class="btn btn-secondary" onclick="showScreen('screen-add-schedule')">戻る</button>
+    </div>
+    <div class="form-group">
+      <label>繰り返し設定</label>
+      <div id="repeat-options-schedule">
+        <label><input type="checkbox" class="repeat-day-schedule" value="1"> 月曜日</label>
+        <label><input type="checkbox" class="repeat-day-schedule" value="2"> 火曜日</label>
+        <label><input type="checkbox" class="repeat-day-schedule" value="3"> 水曜日</label>
+        <label><input type="checkbox" class="repeat-day-schedule" value="4"> 木曜日</label>
+        <label><input type="checkbox" class="repeat-day-schedule" value="5"> 金曜日</label>
+        <label><input type="checkbox" class="repeat-day-schedule" value="6"> 土曜日</label>
+        <label><input type="checkbox" class="repeat-day-schedule" value="0"> 日曜日</label>
+        <label><input type="checkbox" id="repeat-everyday-schedule"> 毎日</label>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="saveRepeatSetting('schedule')">保存</button>
+  </div>
+
+
+  <!-- AIチャット画面 -->
+  <div id="screen-ai" class="screen">
+  <div class="button-group-top">
+    <button class="btn btn-secondary" onclick="showScreen('screen-add-task')">戻る</button>
+    <button class="btn btn-danger" onclick="clearChatHistory()">チャット履歴削除</button>
+  </div>
+  <div class="chat-container" id="chat-container"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="メッセージを入力...">
+    <button class="btn btn-primary" onclick="sendChat()">送信</button>
+  </div>
+</div>
+
+
+  <!-- カレンダー画面 -->
+  <div id="screen-calendar" class="screen">
+    <div class="calendar-header">
+      <button class="btn btn-secondary" onclick="showScreen('screen-main')">戻る</button>
+      <div class="month-navigation">
+        <button class="btn btn-small" onclick="changeMonth(-1)">＜</button>
+        <span id="calendar-month"></span>
+        <button class="btn btn-small" onclick="changeMonth(1)">＞</button>
+      </div>
+    </div>
+    <div id="calendar-grid" class="calendar-grid"></div>
+    <button class="add-button" onclick="showAddTypeDialog()">＋</button>
+  </div>
+
+  <!-- 1日スケジュール画面 -->
+  <div id="screen-dayview" class="screen">
+    <div class="button-group-top">
+      <button class="btn btn-secondary" onclick="showScreen('screen-calendar')">戻る</button>
+    </div>
+    <h1 id="dayview-title"></h1>
+    <div id="dayview-hours"></div>
+  </div>
+
+  <!-- ポップアップ -->
+  <div id="popup" class="popup">
+    <div class="popup-content">
+      <h1 id="popup-msg"></h1>
+      <button class="btn btn-primary" onclick="closePopup()">OK</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
