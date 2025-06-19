@@ -361,20 +361,6 @@ function saveSchedules() {
   localStorage.setItem('schedules', JSON.stringify(schedules));
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // --- AIチャット ---
 // Gemini APIに直接問い合わせる
 async function sendChat() {
@@ -463,8 +449,6 @@ function clearChatHistory() {
   }
 }
 window.clearChatHistory = clearChatHistory; // グローバル登録
-
-// --- カレンダー・1日スケジュール・編集・削除・ポップアップなどは省略（前回までのものをそのまま使えます） ---
 
 // --- カレンダー ---
 function renderCalendar() {
@@ -569,18 +553,13 @@ function closePopup() {
 // --- 初期表示 ---
 showScreen('screen-main');
 
-
-
-
-
-
 // --- グローバル登録 ---
 window.showScreen = showScreen;
 window.showAddTypeDialog = showAddTypeDialog;
 window.closeAddTypeDialog = closeAddTypeDialog;
 window.saveRepeatSetting = saveRepeatSetting;
 window.sendChat = sendChat;
-// 必要に応じて他の関数もwindowに登録
+
 
 // --- 初期表示 ---
 showScreen('screen-main');
